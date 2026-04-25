@@ -1,0 +1,13 @@
+langchain
+langchain-community
+openai
+langchain-chroma
+chromadb
+sentence-transformers
+unstructured
+markdown
+python-dotenv
+numpy
+rich
+colorama
+pytest
