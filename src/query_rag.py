@@ -76,7 +76,7 @@ def run_single_query(rag: HallucinationAwareRAG, question: str, save: bool = Tru
     
     if save:
         filepath = save_response(response)
-        console.print(f"\n[dim]💾 Response saved to: {filepath}[/dim]")
+        console.print(f"\n[dim][Saved] Response saved to: {filepath}[/dim]")
     
     return response
 
@@ -113,6 +113,7 @@ def run_interactive(rag: HallucinationAwareRAG):
 
 def run_demo(rag: HallucinationAwareRAG):
     """Run all demo questions to showcase the system."""
+    # Print welcome message for the demo mode
     console.print(Panel.fit(
         "[bold white]Demo Mode[/bold white]\n"
         f"[dim]Running {len(DEMO_QUESTIONS)} pre-built demo questions[/dim]",
@@ -150,7 +151,7 @@ def _print_session_summary(responses: list):
             f"[{score_color}]{r.consistency_score:.2f}[/{score_color}]",
             r.confidence_label,
             str(r.regeneration_count),
-            "✅" if r.is_reliable else "⚠️"
+            "[PASS]" if r.is_reliable else "[WARN]"
         )
     
     console.print(table)
@@ -188,7 +189,7 @@ def _save_demo_report(responses: list):
     with open(filepath, "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)
     
-    console.print(f"\n[dim]📊 Demo report saved to: {filepath}[/dim]")
+    console.print(f"\n[dim][Saved] Demo report saved to: {filepath}[/dim]")
 
 
 def main():
@@ -210,7 +211,7 @@ Examples:
     args = parser.parse_args()
 
     console.print(Panel.fit(
-        "[bold white]🧠 Hallucination-Aware RAG[/bold white]\n"
+        "[bold white][System] Hallucination-Aware RAG[/bold white]\n"
         "[dim]with Feedback-Based Self-Correction[/dim]",
         border_style="bright_blue"
     ))

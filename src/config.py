@@ -35,9 +35,7 @@ COLLECTION_NAME: str = "hallucination_aware_rag"
 # ── Prompts ──────────────────────────────────────────────────────────────────
 
 RAG_PROMPT_TEMPLATE = """
-You are a knowledgeable assistant. Answer the user's question based ONLY on the context provided below.
-If the context does not contain enough information to answer the question, say so clearly.
-Do NOT add information from outside the provided context.
+You are a helpful assistant. Use the context provided below to answer the user's question. If the context is missing details, do your best to provide a comprehensive answer by combining the context with your own knowledge.
 
 --- CONTEXT ---
 {context}
@@ -83,12 +81,17 @@ Analyze the answer for hallucinations. A hallucination is any claim in the answe
 2. Adds specific facts not present in the context
 3. Misrepresents what the context says
 
+INSTRUCTIONS:
+1. Extract all distinct claims made in the generated answer.
+2. For each claim, determine if it is 'supported' by the context or 'hallucinated'.
+3. Calculate a partial consistency_score as the ratio: (number of supported claims) / (total number of claims). For example, if there are 3 supported claims and 1 hallucinated claim, the score should be 0.75. Do NOT simply output 0.0 or 1.0 unless it is 100% hallucinated or 100% supported.
+
 Respond ONLY in the following JSON format (no other text):
 {{
-  "consistency_score": <float between 0.0 and 1.0>,
+  "consistency_score": <float between 0.0 and 1.0 based on the ratio>,
   "has_hallucination": <true or false>,
   "hallucinated_claims": [<list of specific claims that are hallucinated>],
   "supported_claims": [<list of claims that ARE supported by context>],
-  "reasoning": "<brief explanation of your assessment>"
+  "reasoning": "<brief explanation including the claim counts and how the score was calculated>"
 }}
 """

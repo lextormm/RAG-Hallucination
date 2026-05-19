@@ -12,7 +12,7 @@ The self-correction loop:
   │              ↓                                      │
   │  Hallucination Detector checks consistency          │
   │              ↓                                      │
-  │  Score ≥ threshold? → Return Answer ✅              │
+  │  Score ≥ threshold? → Return Answer [PASS]          │
   │  Score < threshold? → Regenerate with Constraints   │
   │              ↓ (repeat up to MAX_ATTEMPTS)          │
   │  Return best answer found + confidence score        │
@@ -119,7 +119,8 @@ class HallucinationAwareRAG:
         # Initialize hallucination detector
         self.detector = HallucinationDetector()
         
-        console.print("[green]✓ RAG engine ready[/green]")
+        # Ready to serve requests
+        console.print("[green][SUCCESS] RAG engine ready[/green]")
 
     # ─────────────────────────────────────────────────────────────────────────
     # Public API
@@ -143,7 +144,7 @@ class HallucinationAwareRAG:
 
         # Step 2: Initial generation
         if verbose:
-            console.print(f"\n[bold cyan]🤖 Step 2: Generating Initial Answer...[/bold cyan]")
+            console.print(f"\n[bold cyan][AI] Step 2: Generating Initial Answer...[/bold cyan]")
         
         answer = self._generate(question, context_str, strict=False)
         all_attempts = [answer]
@@ -170,10 +171,10 @@ class HallucinationAwareRAG:
             # ✅ Answer is good enough — stop
             if not report.has_hallucination:
                 if verbose:
-                    console.print(f"\n[green bold]✅ Answer accepted after {attempt} detection round(s)[/green bold]")
+                    console.print(f"\n[green bold][PASS] Answer accepted after {attempt} detection round(s)[/green bold]")
                 break
 
-            # 🔄 Hallucination detected — regenerate
+            # [Retry] Hallucination detected — regenerate
             if attempt < MAX_REGENERATION_ATTEMPTS:
                 regen_count += 1
                 strict = report.needs_strict_mode
@@ -181,7 +182,7 @@ class HallucinationAwareRAG:
                 
                 if verbose:
                     mode = "STRICT" if strict else "STANDARD"
-                    console.print(f"\n[yellow]🔄 Regenerating (attempt {attempt + 1}/{MAX_REGENERATION_ATTEMPTS}) — Mode: {mode}[/yellow]")
+                    console.print(f"\n[yellow][Retry] Regenerating (attempt {attempt + 1}/{MAX_REGENERATION_ATTEMPTS}) — Mode: {mode}[/yellow]")
                 
                 answer = self._generate(
                     question, context_str,
@@ -199,7 +200,7 @@ class HallucinationAwareRAG:
             else:
                 # Max attempts reached — use best answer found
                 if verbose:
-                    console.print(f"\n[yellow]⚠️  Max attempts reached. Using best answer (score: {best_score:.2f})[/yellow]")
+                    console.print(f"\n[yellow][WARN] Max attempts reached. Using best answer (score: {best_score:.2f})[/yellow]")
 
         elapsed = time.time() - start_time
 
@@ -228,7 +229,7 @@ class HallucinationAwareRAG:
     def _retrieve(self, query: str, verbose: bool = True) -> List[Document]:
         """Retrieve top-K relevant chunks from ChromaDB."""
         if verbose:
-            console.print(f"[bold cyan]📚 Step 1: Retrieving Context (top {TOP_K_RESULTS} chunks)...[/bold cyan]")
+            console.print(f"[bold cyan][Docs] Step 1: Retrieving Context (top {TOP_K_RESULTS} chunks)...[/bold cyan]")
         
         results = self.db.similarity_search_with_score(query, k=TOP_K_RESULTS)
         
@@ -328,4 +329,4 @@ class HallucinationAwareRAG:
             f"Sources Used:       {', '.join(response.sources)}",
             f"Processing Time:    {response.processing_time_s:.2f}s",
         ]
-        console.print(Panel("\n".join(meta_lines), title="📊 Response Metadata", border_style="dim"))
+        console.print(Panel("\n".join(meta_lines), title="[Info] Response Metadata", border_style="dim"))

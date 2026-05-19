@@ -105,8 +105,9 @@ class HallucinationDetector:
         Returns:
             HallucinationReport with consistency score and analysis
         """
-        console.print(f"\n[bold blue]🔍 Hallucination Detection (attempt {attempt})[/bold blue]")
+        console.print(f"\n[bold blue][Inspect] Hallucination Detection (attempt {attempt})[/bold blue]")
         
+        # Format the detection prompt with the retrieved context and generated answer
         prompt = HALLUCINATION_CHECK_PROMPT_TEMPLATE.format(
             context=context,
             answer=answer

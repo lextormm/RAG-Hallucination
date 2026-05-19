@@ -273,7 +273,7 @@ class RAGEvaluator:
         with open(filepath, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
         
-        console.print(f"\n[dim]📊 Evaluation report saved to: {filepath}[/dim]")
+        console.print(f"\n[dim] Evaluation report saved to: {filepath}[/dim]")
         return filepath
 
 

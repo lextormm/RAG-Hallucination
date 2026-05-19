@@ -32,7 +32,8 @@ console = Console()
 
 def load_documents(documents_path: str) -> List[Document]:
     """Load all markdown and text documents from the given directory."""
-    console.print(f"\n[bold cyan]📂 Loading documents from:[/bold cyan] {documents_path}")
+    # Load the documents from the specified path
+    console.print(f"\n[bold cyan][Directory] Loading documents from:[/bold cyan] {documents_path}")
     
     if not os.path.exists(documents_path):
         console.print(f"[red]ERROR: Documents path does not exist: {documents_path}[/red]")
@@ -61,13 +62,14 @@ def load_documents(documents_path: str) -> List[Document]:
     except Exception:
         pass
 
-    console.print(f"[green]✓ Loaded {len(documents)} document(s)[/green]")
+    # Print success message for document loading
+    console.print(f"[green][SUCCESS] Loaded {len(documents)} document(s)[/green]")
     return documents
 
 
 def split_documents(documents: List[Document]) -> List[Document]:
     """Split documents into chunks with overlap."""
-    console.print(f"\n[bold cyan]✂️  Splitting documents...[/bold cyan]")
+    console.print(f"\n[bold cyan][Process] Splitting documents...[/bold cyan]")
     console.print(f"   Chunk size: {CHUNK_SIZE} | Overlap: {CHUNK_OVERLAP}")
 
     splitter = RecursiveCharacterTextSplitter(
@@ -86,29 +88,29 @@ def split_documents(documents: List[Document]) -> List[Document]:
         src = chunk.metadata.get("source", "unknown")
         chunk.metadata["source_name"] = Path(src).stem
 
-    console.print(f"[green]✓ Created {len(chunks)} chunks from {len(documents)} documents[/green]")
+    console.print(f"[green][SUCCESS] Created {len(chunks)} chunks from {len(documents)} documents[/green]")
     return chunks
 
 
 def get_embedding_function():
     """Return the HuggingFace embedding function (local, no API key needed)."""
-    console.print(f"\n[bold cyan]🔢 Loading embedding model:[/bold cyan] {EMBEDDING_MODEL}")
+    console.print(f"\n[bold cyan][Model] Loading embedding model:[/bold cyan] {EMBEDDING_MODEL}")
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBEDDING_MODEL,
         model_kwargs={"device": "cpu"},
         encode_kwargs={"normalize_embeddings": True},
     )
-    console.print("[green]✓ Embedding model loaded[/green]")
+    console.print("[green][SUCCESS] Embedding model loaded[/green]")
     return embeddings
 
 
 def create_vector_store(chunks: List[Document], embeddings, reset: bool = False):
     """Create or update ChromaDB vector store."""
     if reset and os.path.exists(CHROMA_DB_PATH):
-        console.print(f"\n[yellow]🗑️  Resetting existing database at {CHROMA_DB_PATH}[/yellow]")
+        console.print(f"\n[yellow][Action] Resetting existing database at {CHROMA_DB_PATH}[/yellow]")
         shutil.rmtree(CHROMA_DB_PATH)
 
-    console.print(f"\n[bold cyan]💾 Creating vector database...[/bold cyan]")
+    console.print(f"\n[bold cyan][Storage] Creating vector database...[/bold cyan]")
     console.print(f"   Location: {CHROMA_DB_PATH}")
     console.print(f"   Collection: {COLLECTION_NAME}")
     console.print(f"   Documents to embed: {len(chunks)}")
@@ -143,7 +145,8 @@ def create_vector_store(chunks: List[Document], embeddings, reset: bool = False)
 
 def print_database_summary(chunks: List[Document]):
     """Print a summary table of the database contents."""
-    table = Table(title="📊 Database Summary", show_header=True, header_style="bold magenta")
+    # Construct table for displaying summary
+    table = Table(title="[Report] Database Summary", show_header=True, header_style="bold magenta")
     table.add_column("Source", style="cyan")
     table.add_column("Chunks", justify="right", style="green")
     table.add_column("Avg Chunk Size", justify="right", style="yellow")
@@ -192,7 +195,7 @@ def main(reset: bool = True):
     print_database_summary(chunks)
 
     console.print(Panel(
-        f"[green bold]✅ Database created successfully![/green bold]\n"
+        f"[green bold][SUCCESS] Database created successfully![/green bold]\n"
         f"[dim]Path: {CHROMA_DB_PATH}\n"
         f"Chunks stored: {len(chunks)}\n"
         f"Run query_rag.py to start querying[/dim]",
