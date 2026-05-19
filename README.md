@@ -5,6 +5,7 @@ This project implements a Retrieval-Augmented Generation (RAG) system augmented 
 This documentation provides every technical detail required to understand the system and create a comprehensive system architecture diagram.
 
 ---
+<img width="1012" height="532" alt="image" src="https://github.com/user-attachments/assets/d62fcb16-ce8c-42dd-91b1-13548dd8c96d" />
 
 ## 1. System Components & External API Calling
 
